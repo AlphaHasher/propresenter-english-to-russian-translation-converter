@@ -14,9 +14,6 @@ import zipfile
 # 4. Update the translation_name variable to the name of the translation you are adjusting (for example: ESV RUS Adjusted)
 # 5. Update the metadata and rvmetadata files to include the new translation name (this is where the translation name will be displayed in ProPresenter)
 
-# KNOWN ISSUES:
-# 1. Psalm chapter 9 will be broken because of the way the chapter numbers are adjusted. This is fixed by manually removing the second chapter 9 in the USX file.
-
 # Load the USX file
 file_path = "path/to/your/file.usx"
 output_folder = "path/to/your/output/folder" # created after you download the translation from the link above
@@ -29,7 +26,7 @@ root = tree.getroot()
 verse_map = {
     'PSA': {
         '1:1-2:12': 'X:X',
-        '3:1-9:20': 'X:+1', # Issue occurs here where there are now two chapters labeled 9
+        '3:1-9:20': 'X:+1',
         '10:1': '-1:+21',
         '10:2-18': '-1:+21',
         '11:1-7': '-1:X',
@@ -157,10 +154,28 @@ for elem in root.iter():
 for old_chap_no, new_chap_no in chapter_map.items():
     for chap_elem in root.findall(f".//chapter[@number='{old_chap_no}']"):
         chap_elem.set('number', new_chap_no)
-        print(f"Chapter {old_chap_no} updated to {new_chap_no}")
+        # print(f"Chapter {old_chap_no} updated to {new_chap_no}")
+
 
 # Save the modified XML back to the file
 tree.write(file_path, encoding='utf-8', xml_declaration=False)
+
+# Fixes the duplicate chapter 9 issue
+search_text = '<chapter number="9" style="c" /><para style="s1">'
+replace_text = '<para style="p"><verse number="22" style="v" />'
+
+# Read the file content
+with open(file_path, 'r', encoding='utf-8') as file:
+    file_content = file.read()
+
+first_occurrence_index = file_content.find(search_text)
+second_occurrence_index = file_content.find(search_text, first_occurrence_index + len(search_text))
+file_content = (file_content[:second_occurrence_index] + replace_text + file_content[second_occurrence_index + len(search_text):])
+
+# Write the updated content back to the file
+with open(file_path, 'w', encoding='utf-8') as file:
+    file.write(file_content)
+
 
 zip_location = os.path.join(output_folder, f"../{translation_name}.rvbible")
 shutil.make_archive(zip_location, 'zip', output_folder)
