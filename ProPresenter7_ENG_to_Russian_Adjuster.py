@@ -1,7 +1,9 @@
 import json
-import xml.etree.ElementTree as ET
 import os
+import platform
+import shutil
 import sys
+import xml.etree.ElementTree as ET
 import zipfile
 
 # Author - Daniel Agafonov (https://github.com/AlphaHasher)
@@ -186,4 +188,3 @@ print("Moving bible to ProPresenter directory")
 move_rvbible_propresenter_folder(rvbible_location)
 
 print("Done! Please restart ProPresenter and check if the bible is correctly installed.")
-input("Press enter to close...")
