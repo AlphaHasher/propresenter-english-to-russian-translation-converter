@@ -1,7 +1,9 @@
 import json
-import xml.etree.ElementTree as ET
 import os
+import platform
+import shutil
 import sys
+import xml.etree.ElementTree as ET
 import zipfile
 
 # Author - Daniel Agafonov (https://github.com/AlphaHasher)
